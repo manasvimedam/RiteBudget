@@ -1,0 +1,157 @@
+<html>
+<head>
+<script type="text/javascript">
+	function updateSum(formID, nameID, quantityID, priceID) {
+		var f = document.getElementById(formID)
+		var name = document.getElementById(nameID)
+		var quantity = document.getElementById(quantityID)
+		var price = document.getElementById(priceID)
+		if (f && name && quantity && price) {
+			var tab = f.getElementsByTagName("table")[0]  // expect a table
+			var row = tab.insertRow(tab.rows.length - 1)
+			var qtyVal = parseFloat(quantity.value)
+			var priceVal = parseFloat(price.value)
+			if (!qtyVal) { qtyVal = 0 }
+			if (!priceVal) { priceVal = 0 }
+			qtyVal = parseInt(Math.round(qtyVal*100),10)/100      // force 2 decimal
+			priceVal = parseInt(Math.round(priceVal*100),10)/100  // force 2 decimal
+			var total = qtyVal * priceVal
+			total = parseInt(Math.round(total*100),10)/100      // force 2 decimal
+			var noCell = row.insertCell(0)
+			var txtNo = document.createElement('input');
+			var id = tab.rows.length - 2
+			txtNo.type = 'text';
+			txtNo.style.textAlign = "right"
+			txtNo.size = 1;
+			txtNo.disabled = "disabled"
+			txtNo.value = tab.rows.length - 2
+			noCell.appendChild(txtNo);
+			var nameCell = row.insertCell(1)
+			var txtName = document.createElement('input');
+			txtName.type = 'text';
+			txtName.name = "name" + id;
+			txtName.style.textAlign = "left"
+			txtName.disabled = "disabled"
+			txtName.size = 50;
+			txtName.value = name.value
+			nameCell.appendChild(txtName);
+			var quanityCell = row.insertCell(2)
+			var txtQuanity = document.createElement('input');
+			txtQuanity.type = 'text';
+			txtQuanity.name = "quantity" + id;
+			txtQuanity.id = "quantity" + id;
+			txtQuanity.style.textAlign = "right"
+			txtQuanity.size = 10;
+			txtQuanity.value = qtyVal
+			quanityCell.appendChild(txtQuanity);
+			var priceCell = row.insertCell(3)
+			var txtPrice = document.createElement('input');
+			txtPrice.type = 'text';
+			txtPrice.name = "price" + id;
+			txtPrice.id = "price" + id;
+			txtPrice.style.textAlign = "right"
+			txtPrice.size = 10;
+			txtPrice.value = priceVal
+			priceCell.appendChild(txtPrice);
+			var totalCell = row.insertCell(4)
+			var txtTotal = document.createElement('input');
+			txtTotal.type = 'text';
+			txtTotal.name = "total" + id;
+			txtTotal.id = "total" + id;
+			txtTotal.style.textAlign = "right"
+			txtTotal.size = 10;
+			txtTotal.value = 2;
+			txtTotal.value = total;
+			totalCell.appendChild(txtTotal);
+			
+			var cell6 = row.insertCell(5);
+			var btnEl = document.createElement('input');
+			btnEl.type = 'button';
+			btnEl.value = 'Delete';
+			cell6.appendChild(btnEl);
+		
+			// Add events to list input
+			btnEl.onclick = function () {deleteCurrentRow(row)};
+			txtPrice.onchange = function(){ calcValue(txtQuanity, txtPrice, txtTotal); }
+			txtQuanity.onchange = function(){ calcValue(txtQuanity, txtPrice, txtTotal); }
+			
+			// Add value to total
+			var sum = parseFloat(tab.rows[tab.rows.length-1].cells[4].innerHTML)
+			tab.rows[tab.rows.length-1].cells[4].innerHTML = sum+total
+		}
+	}
+	
+	// Calcule total after chaning some input
+	function calcValue(txtQuanity, txtPrice, txtTotal)
+	{
+		var qnt = txtQuanity.value;
+		var price = txtPrice.value;
+		
+		txtTotal.value = parseFloat(qnt) * parseFloat(price);
+		sumTotal();
+	}
+	// Delete row
+	function deleteCurrentRow(row)
+	{
+		var tab = document.getElementById('atable');	
+		tab.deleteRow(row.rowIndex);
+		for(var i=1; i < tab.rows.length-1; i++) //Skip the first and last row
+		{
+			rows[i].cells[0].innerHTML = i;
+		}		
+		
+		sumTotal();
+	}
+	// Sum Total
+	function sumTotal()
+	{
+		var tab = document.getElementById('atable');
+		var sum = 0;
+		
+		for(var i=1; i < tab.rows.length-1; i++) //Skip the first and last row
+		{
+			sum += parseFloat(tab.rows[i].cells[4].children[0].value);
+		}
+		tab.rows[tab.rows.length-1].cells[4].innerHTML = sum;
+	}
+  
+</script>
+</head>
+ 
+<body style = "background-color: lightyellow">
+<h1 align="center" style = "color: red"> Rite Budget </h1>
+<form id="sell">
+  Name: <input type="text" id="name">
+  <br>
+  Quantity: <input type="text" id="quantity">
+  <br>
+  Price: <input type="text" id="price">
+  <br>
+  Budget: <input type="text" id="budget">
+  <br>
+  <input type="button" value="Add" onClick="updateSum('sell', 'name', 'quantity', 'price')">
+  <br><br>
+  <table style="width:750;empty-cells:show;border-collapse:collapse" id="atable">
+  <tr>
+    <th width="50">No</th>
+    <th width="400">Name</th>
+    <th width="100">Quantity</th>
+    <th width="100">Price</th>
+    <th width="100">Total</th>
+    <th width="100">Budget</th>
+    <th></th>
+  </tr>
+<tbody>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td style="text-align:right;font-weight:bold">Grand Total&nbsp;</td>
+    <td name="allTotal" style="text-align:right;border:1px solid gray">0</td>
+    <td></td>
+  </tr>
+</tbody>  
+  </table>
+</form>
+</body>
+</html>
